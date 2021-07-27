@@ -1,6 +1,8 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, FormArray, FormBuilder } from "@angular/forms";
-import { Product } from '../../models/product.interface';
+import { Product, Item } from '../../models/product.interface';
+import { StockInventoryService } from '../../services/stock-inventory.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'stock-inventory',
@@ -34,17 +36,17 @@ import { Product } from '../../models/product.interface';
         </div>
     `
 })
-export class StockInventoryComponent {
+export class StockInventoryComponent implements OnInit{
     
-    constructor(private fb: FormBuilder) {}
+    constructor(private fb: FormBuilder, private stockService: StockInventoryService) {}
     
-    products: Product[] = [
-        { "id": 1, price: 2800, "name": "MacBook Pro"},
-        { "id": 2, price: 50, "name": "HeadPhones"},
-        { "id": 3, price: 400, "name": "Ipad"},
-        { "id": 4, price: 900, "name": "Iphone"},
-        { "id": 5, price: 600, "name": "JBL hi-fi"}
-    ];
+    ngOnInit(): void {
+        const cart = this.stockService.getCartItems();
+        const products = this.stockService.getProducts();
+
+    }
+    
+    products: Product[];
     
     form = this.fb.group({
         store: this.fb.group({
@@ -52,10 +54,7 @@ export class StockInventoryComponent {
             code: ''
         }),
         selector: this.createStock({}),
-        stock: this.fb.array([
-            this.createStock({ product_id: 1, quantity: 10}),
-            this.createStock({ product_id: 3, quantity: 20})
-        ])
+        stock: this.fb.array([])
     })
     
     createStock(stock) {
